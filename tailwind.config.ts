@@ -27,8 +27,8 @@ export default {
     },
     extend: {
       fontFamily: {
-        display: ['Playfair Display', 'serif'],
-        sans: ['Plus Jakarta Sans', 'sans-serif'],
+        display: ['Amiri', 'serif'],
+        sans: ['Inter', 'sans-serif'],
       },
       colors: {
         border: "hsl(var(--border))",
