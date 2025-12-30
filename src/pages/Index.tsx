@@ -35,7 +35,7 @@ const Index = () => {
       <main className="min-h-screen flex flex-col bg-background relative animate-fade-in">
         <button 
           onClick={() => window.location.href = '/admin'}
-          className="absolute top-4 right-4 z-20 bg-primary text-primary-foreground px-3 py-1 rounded-md text-sm hover:bg-primary/90 transition-colors animate-fade-in"
+          className="fixed top-3 right-3 sm:top-4 sm:right-4 z-20 bg-primary text-primary-foreground px-2.5 py-1.5 sm:px-3 sm:py-2 rounded-md text-xs sm:text-sm hover:bg-primary/90 transition-colors animate-fade-in shadow-lg"
           style={{ animationDelay: '500ms' }}
         >
           Admin
