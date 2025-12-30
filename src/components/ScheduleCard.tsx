@@ -1,4 +1,4 @@
-import { Calendar, CheckCircle2, User } from 'lucide-react';
+import { Calendar, CheckCircle2, User, MapPin } from 'lucide-react';
 import { KhatibSchedule } from '@/lib/schedule-data';
 import { cn } from '@/lib/utils';
 
@@ -48,6 +48,12 @@ const ScheduleCard = ({ schedule, onClick }: ScheduleCardProps) => {
               'Klik untuk mengisi jadwal khutbah'
             )}
           </p>
+          {isBooked && schedule.khatib?.tempatTugas && (
+            <p className="text-muted-foreground text-xs mt-1 flex items-center gap-1 truncate">
+              <MapPin className="w-3 h-3 shrink-0" />
+              <span className="truncate">{schedule.khatib.tempatTugas}</span>
+            </p>
+          )}
         </div>
       </div>
       <div className={cn(
