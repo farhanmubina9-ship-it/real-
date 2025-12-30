@@ -32,11 +32,19 @@ const Index = () => {
         />
       </Helmet>
 
-      <main className="min-h-screen flex flex-col bg-background">
+      <main className="min-h-screen flex flex-col bg-background relative animate-fade-in">
+        <button 
+          onClick={() => window.location.href = '/admin'}
+          className="absolute top-4 right-4 z-20 bg-primary text-primary-foreground px-3 py-1 rounded-md text-sm hover:bg-primary/90 transition-colors animate-fade-in"
+          style={{ animationDelay: '500ms' }}
+        >
+          Admin
+        </button>
         <HeroSection />
         <ScheduleList 
           schedules={schedules} 
-          onSelectSchedule={handleSelectSchedule} 
+          onSelectSchedule={handleSelectSchedule}
+          isLoading={isLoading}
         />
         <KhatibFormDialog
           schedule={selectedSchedule}

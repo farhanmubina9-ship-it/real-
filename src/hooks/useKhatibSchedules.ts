@@ -1,52 +1,45 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
 import { generateFridays2026, KhatibSchedule, KhatibData } from '@/lib/schedule-data';
 import { format } from 'date-fns';
 
-interface DbKhatibSchedule {
-  id: string;
+interface LocalKhatibSchedule {
   schedule_date: string;
   nama_lengkap: string;
   nip: string;
   no_hp: string;
   tempat_tugas: string;
-  saran: string | null;
-  created_at: string;
-  updated_at: string;
+  saran?: string;
 }
+
+const STORAGE_KEY = 'khatib_schedules';
 
 export function useKhatibSchedules() {
   const queryClient = useQueryClient();
   const fridays = generateFridays2026();
 
-  const { data: dbSchedules, isLoading, error } = useQuery({
+  const { data: localSchedules, isLoading, error } = useQuery({
     queryKey: ['khatib-schedules'],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from('khatib_schedules')
-        .select('*')
-        .order('schedule_date', { ascending: true });
-      
-      if (error) throw error;
-      return data as DbKhatibSchedule[];
+      const stored = localStorage.getItem(STORAGE_KEY);
+      return stored ? JSON.parse(stored) : [];
     },
   });
 
-  // Merge local fridays with database data
+  // Merge local fridays with local storage data
   const schedules: KhatibSchedule[] = fridays.map(friday => {
-    const dbEntry = dbSchedules?.find(
-      db => db.schedule_date === format(friday.date, 'yyyy-MM-dd')
+    const localEntry = localSchedules?.find(
+      (ls: LocalKhatibSchedule) => ls.schedule_date === format(friday.date, 'yyyy-MM-dd')
     );
     
-    if (dbEntry) {
+    if (localEntry) {
       return {
         ...friday,
         khatib: {
-          namaLengkap: dbEntry.nama_lengkap,
-          nip: dbEntry.nip,
-          noHP: dbEntry.no_hp,
-          tempatTugas: dbEntry.tempat_tugas,
-          saran: dbEntry.saran || undefined,
+          namaLengkap: localEntry.nama_lengkap,
+          nip: localEntry.nip,
+          noHP: localEntry.no_hp,
+          tempatTugas: localEntry.tempat_tugas,
+          saran: localEntry.saran,
         },
       };
     }
@@ -56,18 +49,20 @@ export function useKhatibSchedules() {
 
   const registerMutation = useMutation({
     mutationFn: async ({ schedule, data }: { schedule: KhatibSchedule; data: KhatibData }) => {
-      const { error } = await supabase
-        .from('khatib_schedules')
-        .insert({
-          schedule_date: format(schedule.date, 'yyyy-MM-dd'),
-          nama_lengkap: data.namaLengkap,
-          nip: data.nip,
-          no_hp: data.noHP,
-          tempat_tugas: data.tempatTugas,
-          saran: data.saran || null,
-        });
-
-      if (error) throw error;
+      const stored = localStorage.getItem(STORAGE_KEY);
+      const schedules = stored ? JSON.parse(stored) : [];
+      
+      const newEntry: LocalKhatibSchedule = {
+        schedule_date: format(schedule.date, 'yyyy-MM-dd'),
+        nama_lengkap: data.namaLengkap,
+        nip: data.nip,
+        no_hp: data.noHP,
+        tempat_tugas: data.tempatTugas,
+        saran: data.saran,
+      };
+      
+      schedules.push(newEntry);
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(schedules));
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['khatib-schedules'] });
@@ -76,12 +71,12 @@ export function useKhatibSchedules() {
 
   const deleteMutation = useMutation({
     mutationFn: async (scheduleDate: string) => {
-      const { error } = await supabase
-        .from('khatib_schedules')
-        .delete()
-        .eq('schedule_date', scheduleDate);
-
-      if (error) throw error;
+      const stored = localStorage.getItem(STORAGE_KEY);
+      if (!stored) return;
+      
+      const schedules = JSON.parse(stored);
+      const filtered = schedules.filter((s: LocalKhatibSchedule) => s.schedule_date !== scheduleDate);
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(filtered));
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['khatib-schedules'] });
@@ -89,13 +84,8 @@ export function useKhatibSchedules() {
   });
 
   const getAllSchedules = async () => {
-    const { data, error } = await supabase
-      .from('khatib_schedules')
-      .select('*')
-      .order('schedule_date', { ascending: true });
-
-    if (error) throw error;
-    return data as DbKhatibSchedule[];
+    const stored = localStorage.getItem(STORAGE_KEY);
+    return stored ? JSON.parse(stored) : [];
   };
 
   return {

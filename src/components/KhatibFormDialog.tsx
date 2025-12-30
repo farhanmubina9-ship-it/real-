@@ -164,7 +164,16 @@ const KhatibFormDialog = ({ schedule, open, onOpenChange, onSubmit }: KhatibForm
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Tempat Tugas</FormLabel>
-                  <Select onValueChange={field.onChange} value={field.value}>
+                  <Select 
+                    onValueChange={(value) => {
+                      if (value === 'Lainnya') {
+                        field.onChange('');
+                      } else {
+                        field.onChange(value);
+                      }
+                    }} 
+                    value={TEMPAT_TUGAS_OPTIONS.slice(0, 3).includes(field.value) ? field.value : 'Lainnya'}
+                  >
                     <FormControl>
                       <SelectTrigger>
                         <SelectValue placeholder="Pilih tempat tugas" />
@@ -178,6 +187,16 @@ const KhatibFormDialog = ({ schedule, open, onOpenChange, onSubmit }: KhatibForm
                       ))}
                     </SelectContent>
                   </Select>
+                  {!TEMPAT_TUGAS_OPTIONS.slice(0, 3).includes(field.value) && (
+                    <FormControl>
+                      <Input 
+                        placeholder="Tulis tempat tugas Anda" 
+                        value={field.value || ''}
+                        onChange={(e) => field.onChange(e.target.value)}
+                        className="mt-2"
+                      />
+                    </FormControl>
+                  )}
                   <FormMessage />
                 </FormItem>
               )}

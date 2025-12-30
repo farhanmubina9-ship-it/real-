@@ -1,14 +1,35 @@
 import { useMemo } from 'react';
 import { KhatibSchedule, groupByMonth, MONTHS } from '@/lib/schedule-data';
 import ScheduleCard from './ScheduleCard';
+import { Skeleton } from '@/components/ui/skeleton';
 
 interface ScheduleListProps {
   schedules: KhatibSchedule[];
   onSelectSchedule: (schedule: KhatibSchedule) => void;
+  isLoading?: boolean;
 }
 
-const ScheduleList = ({ schedules, onSelectSchedule }: ScheduleListProps) => {
+const ScheduleList = ({ schedules, onSelectSchedule, isLoading }: ScheduleListProps) => {
   const groupedSchedules = useMemo(() => groupByMonth(schedules), [schedules]);
+
+  if (isLoading) {
+    return (
+      <div className="container mx-auto px-3 sm:px-4 py-6 sm:py-8 md:py-12 lg:py-16">
+        <div className="max-w-3xl mx-auto space-y-8 sm:space-y-10">
+          {Array.from({ length: 3 }).map((_, monthIdx) => (
+            <section key={monthIdx} className="animate-fade-in" style={{ animationDelay: `${monthIdx * 200}ms` }}>
+              <Skeleton className="h-8 w-48 mb-4" />
+              <div className="space-y-2.5 sm:space-y-3">
+                {Array.from({ length: 4 }).map((_, cardIdx) => (
+                  <Skeleton key={cardIdx} className="h-20 w-full rounded-lg" />
+                ))}
+              </div>
+            </section>
+          ))}
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="container mx-auto px-3 sm:px-4 py-6 sm:py-8 md:py-12 lg:py-16">
@@ -23,12 +44,17 @@ const ScheduleList = ({ schedules, onSelectSchedule }: ScheduleListProps) => {
                 {month}
               </h2>
               <div className="space-y-2.5 sm:space-y-3">
-                {monthSchedules.map(schedule => (
-                  <ScheduleCard
+                {monthSchedules.map((schedule, cardIdx) => (
+                  <div
                     key={schedule.dateString}
-                    schedule={schedule}
-                    onClick={() => onSelectSchedule(schedule)}
-                  />
+                    className="animate-fade-in"
+                    style={{ animationDelay: `${(idx * 50) + (cardIdx * 100)}ms` }}
+                  >
+                    <ScheduleCard
+                      schedule={schedule}
+                      onClick={() => onSelectSchedule(schedule)}
+                    />
+                  </div>
                 ))}
               </div>
             </section>

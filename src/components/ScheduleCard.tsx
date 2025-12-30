@@ -15,12 +15,13 @@ const ScheduleCard = ({ schedule, onClick }: ScheduleCardProps) => {
       onClick={onClick}
       disabled={isBooked}
       className={cn(
-        "w-full bg-card rounded-lg border p-3 sm:p-4 md:p-5 text-left card-hover",
+        "w-full bg-card rounded-lg border p-3 sm:p-4 md:p-5 text-left transition-all duration-300",
         "flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4",
         "focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2",
+        "hover:shadow-lg hover:scale-[1.02]",
         isBooked
           ? "opacity-75 cursor-default"
-          : "cursor-pointer hover:border-primary/50"
+          : "cursor-pointer hover:border-primary/50 hover:bg-accent/50"
       )}
     >
       <div className="flex items-start gap-2.5 sm:gap-3 md:gap-4 flex-1 min-w-0">

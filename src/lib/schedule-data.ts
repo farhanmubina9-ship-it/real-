@@ -65,14 +65,7 @@ export const MONTHS = [
 
 export const TEMPAT_TUGAS_OPTIONS = [
   'Al-Jami\'ah',
-  'Fakultas Adab dan Humaniora',
-  'Fakultas Dakwah dan Komunikasi',
-  'Fakultas Ekonomi dan Bisnis Islam',
-  'Fakultas Ilmu Sosial dan Ilmu Politik',
-  'Fakultas Psikologi',
-  'Fakultas Sains dan Teknologi',
-  'Fakultas Syariah dan Hukum',
-  'Fakultas Tarbiyah dan Keguruan',
-  'Fakultas Ushuluddin',
+  'Fakultas',
   'Pascasarjana',
+  'Lainnya',
 ];
